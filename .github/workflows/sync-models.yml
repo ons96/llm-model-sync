@@ -1,0 +1,84 @@
+name: Sync LLM Models & Pricing
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      timeout:
+        description: 'Per-provider timeout (seconds)'
+        required: false
+        default: '10'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be4102b0be9d225f506b08c7bc7b5c4fd # v5.6.0
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install aiohttp
+
+      - name: Sync models & pricing
+        env:
+          PROVIDERS_JSON: ${{ secrets.PROVIDERS_JSON }}
+          PROVIDER_TIMEOUT: ${{ github.event.inputs.timeout || '10' }}
+          DATA_DIR: data
+        run: python scripts/sync_models.py
+
+      - name: Check for pricing changes
+        id: changes
+        run: |
+          change_count=$(python3 -c "import json; print(len(json.load(open('data/pricing-changes.json'))))" 2>/dev/null || echo "0")
+          echo "count=$change_count" >> "$GITHUB_OUTPUT"
+          echo "Pricing changes: $change_count"
+
+      - name: Commit updated data files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/models.json data/pricing.json data/pricing-changes.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "sync: update model catalog and pricing data"
+            git push
+          fi
+
+      - name: Trigger VPS sync
+        if: success()
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.VPS_SYNC_PAT }}
+          repository: ${{ github.repository }}
+          event-type: vps-sync
+          client-payload: '{"run_id": "${{ github.run_id }}"}'
+
+      - name: Alert on free-to-paid changes
+        if: steps.changes.outputs.count != '0'
+        uses: peter-evans/create-or-update-comment@71345be5269edae3c4c8c7789cb0b822c06412c2 # v4.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.VPS_SYNC_PAT }}
+          repository: ${{ github.repository }}
+          issue-number: 1
+          body: |
+            :warning: **Free-to-Paid Model Changes Detected**
+
+            ${{ steps.changes.outputs.count }} model(s) that were previously free now have pricing.
+
+            See [run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.

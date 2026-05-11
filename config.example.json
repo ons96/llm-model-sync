@@ -1,0 +1,38 @@
+[
+  {
+    "id": "groq",
+    "base_url": "https://api.groq.com/openai/v1",
+    "api_key": "YOUR_GROQ_API_KEY",
+    "type": "openai-compatible"
+  },
+  {
+    "id": "gemini",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta",
+    "api_key": "YOUR_GEMINI_API_KEY",
+    "type": "openai-compatible"
+  },
+  {
+    "id": "cerebras",
+    "base_url": "https://api.cerebras.ai/v1",
+    "api_key": "YOUR_CEREBRAS_API_KEY",
+    "type": "openai-compatible"
+  },
+  {
+    "id": "supacoder",
+    "base_url": "https://supacoder.top/v1",
+    "api_key": "YOUR_SUPACODER_API_KEY",
+    "type": "new-api"
+  },
+  {
+    "id": "aihubmix",
+    "base_url": "https://aihubmix.com/v1",
+    "api_key": "YOUR_AIHUBMIX_API_KEY",
+    "type": "new-api"
+  },
+  {
+    "id": "iflow",
+    "base_url": "https://api.iflow.cn/v1",
+    "api_key": "YOUR_IFLOW_API_KEY",
+    "type": "new-api"
+  }
+]
