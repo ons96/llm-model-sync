@@ -20,12 +20,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
         with:
           persist-credentials: true
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@a26af69be4102b0be9d225f506b08c7bc7b5c4fd # v5.6.0
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -60,7 +60,7 @@ jobs:
 
       - name: Trigger VPS sync
         if: success()
-        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0 # v3.0.0
+        uses: peter-evans/repository-dispatch@v3
         continue-on-error: true
         with:
           token: ${{ secrets.VPS_SYNC_PAT }}
@@ -70,7 +70,7 @@ jobs:
 
       - name: Alert on free-to-paid changes
         if: steps.changes.outputs.count != '0'
-        uses: peter-evans/create-or-update-comment@71345be5269edae3c4c8c7789cb0b822c06412c2 # v4.0.0
+        uses: peter-evans/create-or-update-comment@v4
         continue-on-error: true
         with:
           token: ${{ secrets.VPS_SYNC_PAT }}
