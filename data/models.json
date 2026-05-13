@@ -1,13 +1,13 @@
 {
   "antigravity": {
     "base_url": "https://api.antigravity.dev",
-    "fetched_at": "2026-05-13T08:56:12.300130+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488670+00:00",
     "model_count": 0,
     "models": []
   },
   "blazeai": {
     "base_url": "https://blazeai.boxu.dev",
-    "fetched_at": "2026-05-13T08:56:12.300154+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488691+00:00",
     "model_count": 24,
     "models": [
       "DeepSeek-V4-Flash-TEST",
@@ -38,18 +38,18 @@
   },
   "cerebras": {
     "base_url": "https://api.cerebras.ai",
-    "fetched_at": "2026-05-13T08:56:12.300163+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488701+00:00",
     "model_count": 4,
     "models": [
-      "llama3.1-8b",
-      "gpt-oss-120b",
       "qwen-3-235b-a22b-instruct-2507",
-      "zai-glm-4.7"
+      "zai-glm-4.7",
+      "gpt-oss-120b",
+      "llama3.1-8b"
     ]
   },
   "freetheai": {
     "base_url": "https://api.freetheai.xyz",
-    "fetched_at": "2026-05-13T08:56:12.300181+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488716+00:00",
     "model_count": 120,
     "models": [
       "bbg/MiniMaxAI/MiniMax-M2.7",
@@ -176,43 +176,43 @@
   },
   "g4f": {
     "base_url": "https://g4f.space",
-    "fetched_at": "2026-05-13T08:56:12.300186+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488720+00:00",
     "model_count": 0,
     "models": []
   },
   "g4f_gemini": {
     "base_url": "https://g4f.space/api/gemini",
-    "fetched_at": "2026-05-13T08:56:12.300218+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488723+00:00",
     "model_count": 0,
     "models": []
   },
   "g4f_groq": {
     "base_url": "https://g4f.space/api/groq",
-    "fetched_at": "2026-05-13T08:56:12.300223+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488725+00:00",
     "model_count": 0,
     "models": []
   },
   "g4f_nvidia": {
     "base_url": "https://g4f.space/api/nvidia",
-    "fetched_at": "2026-05-13T08:56:12.300226+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488727+00:00",
     "model_count": 0,
     "models": []
   },
   "g4f_ollama": {
     "base_url": "https://g4f.space/api/ollama",
-    "fetched_at": "2026-05-13T08:56:12.300229+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488729+00:00",
     "model_count": 0,
     "models": []
   },
   "g4f_pollinations": {
     "base_url": "https://g4f.space/api/pollinations",
-    "fetched_at": "2026-05-13T08:56:12.300232+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488731+00:00",
     "model_count": 0,
     "models": []
   },
   "gemini": {
     "base_url": "https://generativelanguage.googleapis.com/v1beta",
-    "fetched_at": "2026-05-13T08:56:12.300242+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488746+00:00",
     "model_count": 50,
     "models": [
       "gemini-2.5-flash",
@@ -269,30 +269,30 @@
   },
   "groq": {
     "base_url": "https://api.groq.com/openai",
-    "fetched_at": "2026-05-13T08:56:12.300250+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488752+00:00",
     "model_count": 16,
     "models": [
-      "allam-2-7b",
-      "canopylabs/orpheus-arabic-saudi",
-      "groq/compound-mini",
+      "openai/gpt-oss-120b",
       "qwen/qwen3-32b",
-      "whisper-large-v3-turbo",
       "llama-3.1-8b-instant",
-      "whisper-large-v3",
-      "meta-llama/llama-prompt-guard-2-86m",
+      "canopylabs/orpheus-arabic-saudi",
+      "meta-llama/llama-prompt-guard-2-22m",
       "meta-llama/llama-4-scout-17b-16e-instruct",
       "groq/compound",
-      "meta-llama/llama-prompt-guard-2-22m",
+      "canopylabs/orpheus-v1-english",
+      "groq/compound-mini",
       "openai/gpt-oss-20b",
-      "openai/gpt-oss-120b",
-      "llama-3.3-70b-versatile",
+      "allam-2-7b",
       "openai/gpt-oss-safeguard-20b",
-      "canopylabs/orpheus-v1-english"
+      "whisper-large-v3",
+      "llama-3.3-70b-versatile",
+      "meta-llama/llama-prompt-guard-2-86m",
+      "whisper-large-v3-turbo"
     ]
   },
   "huashang": {
     "base_url": "https://huashang.dpdns.org",
-    "fetched_at": "2026-05-13T08:56:12.300265+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488766+00:00",
     "model_count": 104,
     "models": [
       "abacusai/dracarys-llama-3.1-70b-instruct",
@@ -403,7 +403,7 @@
   },
   "logfare": {
     "base_url": "https://logfare.ai",
-    "fetched_at": "2026-05-13T08:56:12.300269+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488771+00:00",
     "model_count": 4,
     "models": [
       "gemini-3-flash",
@@ -414,7 +414,7 @@
   },
   "lotte-library": {
     "base_url": "https://api.lotte-library.top",
-    "fetched_at": "2026-05-13T08:56:12.300284+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488781+00:00",
     "model_count": 109,
     "models": [
       "Claude Opus 4.6",
@@ -530,7 +530,7 @@
   },
   "mistral": {
     "base_url": "https://api.mistral.ai",
-    "fetched_at": "2026-05-13T08:56:12.300302+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488798+00:00",
     "model_count": 68,
     "models": [
       "mistral-medium-2505",
@@ -605,7 +605,7 @@
   },
   "nvidia": {
     "base_url": "https://integrate.api.nvidia.com",
-    "fetched_at": "2026-05-13T08:56:12.300320+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488818+00:00",
     "model_count": 129,
     "models": [
       "01-ai/yi-large",
@@ -741,7 +741,7 @@
   },
   "opencode": {
     "base_url": "https://opencode.ai/zen",
-    "fetched_at": "2026-05-13T08:56:12.300327+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488827+00:00",
     "model_count": 41,
     "models": [
       "claude-opus-4-7",
@@ -789,7 +789,7 @@
   },
   "opencode_zen": {
     "base_url": "https://opencode.ai/zen",
-    "fetched_at": "2026-05-13T08:56:12.300336+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488834+00:00",
     "model_count": 41,
     "models": [
       "claude-opus-4-7",
@@ -837,7 +837,7 @@
   },
   "openrouter": {
     "base_url": "https://openrouter.ai/api",
-    "fetched_at": "2026-05-13T08:56:12.300417+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488932+00:00",
     "model_count": 363,
     "models": [
       "anthropic/claude-opus-4.7-fast",
@@ -1207,13 +1207,13 @@
   },
   "supacoder": {
     "base_url": "https://supacoder.top",
-    "fetched_at": "2026-05-13T08:56:12.300420+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488934+00:00",
     "model_count": 0,
     "models": []
   },
   "together": {
     "base_url": "https://api.together.xyz",
-    "fetched_at": "2026-05-13T08:56:12.300476+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488986+00:00",
     "model_count": 238,
     "models": [
       "deepseek-ai/DeepSeek-V4-Pro",
@@ -1458,13 +1458,13 @@
   },
   "xinjianya": {
     "base_url": "https://api.xinjianya.top",
-    "fetched_at": "2026-05-13T08:56:12.300479+00:00",
+    "fetched_at": "2026-05-13T09:05:01.488989+00:00",
     "model_count": 0,
     "models": []
   },
   "zanity": {
     "base_url": "https://api.zanity.xyz",
-    "fetched_at": "2026-05-13T08:56:12.300500+00:00",
+    "fetched_at": "2026-05-13T09:05:01.489009+00:00",
     "model_count": 96,
     "models": [
       "gpt-3.5-turbo",
@@ -1567,7 +1567,7 @@
   },
   "zenllm": {
     "base_url": "https://zenllm.org",
-    "fetched_at": "2026-05-13T08:56:12.300503+00:00",
+    "fetched_at": "2026-05-13T09:05:01.489012+00:00",
     "model_count": 0,
     "models": []
   }
