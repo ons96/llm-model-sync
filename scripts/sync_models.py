@@ -42,8 +42,21 @@ PROVIDER_TYPE_NEWAPI = "new-api"
 NEWAPI_HOST_SIGNATURES = [
     "noobrouter", "supacoder", "aihubmix", "iflow", "xinjianya",
     "swiftrouter", "bluesminds", "cliproxyapi", "hapuppy", "logfare",
-    "ollama-cloud", "aitools", "ktai", "wiwi",
+    "ollama-cloud", "aitools", "ktai", "wiwi", "blazeai",
+    "lotte-library", "huashang", "mydamoxing", "jiekou", "freetheai",
+    "zanity", "zenmux", "iflowcn", "llmgateway", "meganova",
+    "kilocloud", "kilo",
 ]
+
+GEMINI_PROVIDERS = {"gemini"}
+
+PROVIDER_CUSTOM_MODELS_PATH = {
+    "blazeai": "/api/models",
+}
+
+PROVIDER_CUSTOM_PRICING_PATH = {
+    "blazeai": "/api/pricing",
+}
 
 
 def detect_provider_type(base_url: str) -> str:
@@ -62,25 +75,51 @@ async def fetch_models(
     api_key: str,
     timeout: int,
 ) -> list[dict[str, Any]]:
-    """Fetch /v1/models from a provider. Returns list of model dicts from the 'data' key."""
-    url = f"{base_url.rstrip('/')}/v1/models"
-    headers = {"Authorization": f"Bearer {api_key}"}
+    """Fetch models from a provider. Handles multiple API formats:
+    - OpenAI-compatible: GET {base_url}/v1/models (Bearer auth)
+    - Gemini: GET {base_url}/models?key=... (query param auth)
+    - Custom paths via PROVIDER_CUSTOM_MODELS_PATH
+    - Together-style: returns list directly instead of {data: [...]}
+    """
+    if provider_id in PROVIDER_CUSTOM_MODELS_PATH:
+        path = PROVIDER_CUSTOM_MODELS_PATH[provider_id]
+        url = f"{base_url.rstrip('/')}{path}"
+    elif provider_id in GEMINI_PROVIDERS:
+        url = f"{base_url.rstrip('/')}/models?key={api_key}"
+    else:
+        url = f"{base_url.rstrip('/')}/v1/models"
+
+    if provider_id in GEMINI_PROVIDERS:
+        headers = {}
+    else:
+        headers = {"Authorization": f"Bearer {api_key}"}
+
     try:
         async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=timeout)) as resp:
             if resp.status != 200:
-                log.warning("[%s] /v1/models returned %s", provider_id, resp.status)
+                log.warning("[%s] models endpoint returned %s", provider_id, resp.status)
                 return []
             body = await resp.json(content_type=None)
-            models = body.get("data", [])
-            if isinstance(models, list):
-                return models
-            log.warning("[%s] Unexpected /v1/models shape: %s", provider_id, type(models).__name__)
+
+            if isinstance(body, list):
+                return body
+
+            if isinstance(body, dict):
+                if provider_id in GEMINI_PROVIDERS:
+                    gemini_models = body.get("models", [])
+                    return [{"id": m["name"].replace("models/", ""), "object": "model", "raw": m} for m in gemini_models if isinstance(m, dict)]
+
+                models = body.get("data", [])
+                if isinstance(models, list):
+                    return models
+
+            log.warning("[%s] Unexpected response shape: %s", provider_id, type(body).__name__)
             return []
     except asyncio.TimeoutError:
-        log.warning("[%s] /v1/models timed out after %ds", provider_id, timeout)
+        log.warning("[%s] models endpoint timed out after %ds", provider_id, timeout)
         return []
     except Exception as exc:
-        log.warning("[%s] /v1/models error: %s", provider_id, exc)
+        log.warning("[%s] models endpoint error: %s", provider_id, exc)
         return []
 
 
@@ -93,6 +132,9 @@ async def fetch_pricing_newapi(
 ) -> dict[str, Any]:
     """Fetch /api/pricing from a new-api provider. Returns {model_id: pricing_info}."""
     url = f"{base_url.rstrip('/')}/api/pricing"
+    if provider_id in PROVIDER_CUSTOM_PRICING_PATH:
+        path = PROVIDER_CUSTOM_PRICING_PATH[provider_id]
+        url = f"{base_url.rstrip('/')}{path}"
     headers = {}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"

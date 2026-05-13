@@ -8,7 +8,7 @@ on:
       timeout:
         description: 'Per-provider timeout (seconds)'
         required: false
-        default: '10'
+        default: '15'
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -32,10 +32,17 @@ jobs:
       - name: Install dependencies
         run: pip install aiohttp
 
+      - name: Validate PROVIDERS_JSON
+        run: |
+          if [ -z "${{ secrets.PROVIDERS_JSON }}" ]; then
+            echo "::error::PROVIDERS_JSON secret is not set. Add it in Settings > Secrets."
+            exit 1
+          fi
+
       - name: Sync models & pricing
         env:
           PROVIDERS_JSON: ${{ secrets.PROVIDERS_JSON }}
-          PROVIDER_TIMEOUT: ${{ github.event.inputs.timeout || '10' }}
+          PROVIDER_TIMEOUT: ${{ github.event.inputs.timeout || '15' }}
           DATA_DIR: data
         run: python scripts/sync_models.py
 
@@ -45,6 +52,16 @@ jobs:
           change_count=$(python3 -c "import json; print(len(json.load(open('data/pricing-changes.json'))))" 2>/dev/null || echo "0")
           echo "count=$change_count" >> "$GITHUB_OUTPUT"
           echo "Pricing changes: $change_count"
+
+      - name: Verify no secrets in output
+        run: |
+          for f in data/models.json data/pricing.json data/pricing-changes.json; do
+            if grep -qE '(sk-|gsk_|nvapi-|blz_|AIza|lfu_|sta_|vc-|csk-)' "$f" 2>/dev/null; then
+              echo "::error::Secret key pattern found in $f — aborting commit"
+              exit 1
+            fi
+          done
+          echo "Output files verified: no secrets leaked"
 
       - name: Commit updated data files
         run: |
@@ -57,6 +74,42 @@ jobs:
             git commit -m "sync: update model catalog and pricing data"
             git push
           fi
+
+      - name: Push to private data repo
+        if: success() && secrets.PRIVATE_DATA_PAT != ''
+        continue-on-error: true
+        env:
+          PRIVATE_DATA_PAT: ${{ secrets.PRIVATE_DATA_PAT }}
+          PRIVATE_DATA_REPO: ${{ secrets.PRIVATE_DATA_REPO }}
+        run: |
+          if [ -z "$PRIVATE_DATA_REPO" ]; then
+            echo "PRIVATE_DATA_REPO secret not set, skipping"
+            exit 0
+          fi
+          CLONE_URL="https://x-access-token:${PRIVATE_DATA_PAT}@github.com/${PRIVATE_DATA_REPO}.git"
+          TMPDIR=$(mktemp -d)
+          git clone "$CLONE_URL" "$TMPDIR/repo" --depth 1 2>/dev/null || {
+            echo "Could not clone private repo, creating fresh"
+            mkdir -p "$TMPDIR/repo"
+            cd "$TMPDIR/repo"
+            git init
+            git remote add origin "$CLONE_URL"
+          }
+          cd "$TMPDIR/repo"
+          mkdir -p data
+          cp "${{ github.workspace }}/data/models.json" data/
+          cp "${{ github.workspace }}/data/pricing.json" data/ 2>/dev/null || true
+          cp "${{ github.workspace }}/data/pricing-changes.json" data/ 2>/dev/null || true
+          git add data/
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --cached --quiet; then
+            echo "No changes to push to private repo"
+          else
+            git commit -m "sync: update model catalog $(date -u +%Y-%m-%d)"
+            git push
+          fi
+          rm -rf "$TMPDIR"
 
       - name: Trigger VPS sync
         if: success()
