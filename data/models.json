@@ -1,7 +1,13 @@
 {
+  "antigravity": {
+    "base_url": "https://api.antigravity.dev",
+    "fetched_at": "2026-05-13T08:56:12.300130+00:00",
+    "model_count": 0,
+    "models": []
+  },
   "blazeai": {
     "base_url": "https://blazeai.boxu.dev",
-    "fetched_at": "2026-05-13T04:31:48.492730+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300154+00:00",
     "model_count": 24,
     "models": [
       "DeepSeek-V4-Flash-TEST",
@@ -32,7 +38,7 @@
   },
   "cerebras": {
     "base_url": "https://api.cerebras.ai",
-    "fetched_at": "2026-05-13T04:31:48.492746+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300163+00:00",
     "model_count": 4,
     "models": [
       "llama3.1-8b",
@@ -43,7 +49,7 @@
   },
   "freetheai": {
     "base_url": "https://api.freetheai.xyz",
-    "fetched_at": "2026-05-13T04:31:48.492772+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300181+00:00",
     "model_count": 120,
     "models": [
       "bbg/MiniMaxAI/MiniMax-M2.7",
@@ -168,9 +174,45 @@
       "yng/gpt-5.5"
     ]
   },
+  "g4f": {
+    "base_url": "https://g4f.space",
+    "fetched_at": "2026-05-13T08:56:12.300186+00:00",
+    "model_count": 0,
+    "models": []
+  },
+  "g4f_gemini": {
+    "base_url": "https://g4f.space/api/gemini",
+    "fetched_at": "2026-05-13T08:56:12.300218+00:00",
+    "model_count": 0,
+    "models": []
+  },
+  "g4f_groq": {
+    "base_url": "https://g4f.space/api/groq",
+    "fetched_at": "2026-05-13T08:56:12.300223+00:00",
+    "model_count": 0,
+    "models": []
+  },
+  "g4f_nvidia": {
+    "base_url": "https://g4f.space/api/nvidia",
+    "fetched_at": "2026-05-13T08:56:12.300226+00:00",
+    "model_count": 0,
+    "models": []
+  },
+  "g4f_ollama": {
+    "base_url": "https://g4f.space/api/ollama",
+    "fetched_at": "2026-05-13T08:56:12.300229+00:00",
+    "model_count": 0,
+    "models": []
+  },
+  "g4f_pollinations": {
+    "base_url": "https://g4f.space/api/pollinations",
+    "fetched_at": "2026-05-13T08:56:12.300232+00:00",
+    "model_count": 0,
+    "models": []
+  },
   "gemini": {
     "base_url": "https://generativelanguage.googleapis.com/v1beta",
-    "fetched_at": "2026-05-13T04:31:48.492783+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300242+00:00",
     "model_count": 50,
     "models": [
       "gemini-2.5-flash",
@@ -227,30 +269,30 @@
   },
   "groq": {
     "base_url": "https://api.groq.com/openai",
-    "fetched_at": "2026-05-13T04:31:48.492788+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300250+00:00",
     "model_count": 16,
     "models": [
-      "llama-3.3-70b-versatile",
-      "meta-llama/llama-4-scout-17b-16e-instruct",
-      "canopylabs/orpheus-v1-english",
-      "groq/compound",
-      "groq/compound-mini",
-      "whisper-large-v3-turbo",
       "allam-2-7b",
-      "meta-llama/llama-prompt-guard-2-86m",
-      "openai/gpt-oss-safeguard-20b",
-      "whisper-large-v3",
-      "meta-llama/llama-prompt-guard-2-22m",
-      "qwen/qwen3-32b",
       "canopylabs/orpheus-arabic-saudi",
-      "openai/gpt-oss-120b",
+      "groq/compound-mini",
+      "qwen/qwen3-32b",
+      "whisper-large-v3-turbo",
+      "llama-3.1-8b-instant",
+      "whisper-large-v3",
+      "meta-llama/llama-prompt-guard-2-86m",
+      "meta-llama/llama-4-scout-17b-16e-instruct",
+      "groq/compound",
+      "meta-llama/llama-prompt-guard-2-22m",
       "openai/gpt-oss-20b",
-      "llama-3.1-8b-instant"
+      "openai/gpt-oss-120b",
+      "llama-3.3-70b-versatile",
+      "openai/gpt-oss-safeguard-20b",
+      "canopylabs/orpheus-v1-english"
     ]
   },
   "huashang": {
     "base_url": "https://huashang.dpdns.org",
-    "fetched_at": "2026-05-13T04:31:48.492795+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300265+00:00",
     "model_count": 104,
     "models": [
       "abacusai/dracarys-llama-3.1-70b-instruct",
@@ -361,7 +403,7 @@
   },
   "logfare": {
     "base_url": "https://logfare.ai",
-    "fetched_at": "2026-05-13T04:31:48.492800+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300269+00:00",
     "model_count": 4,
     "models": [
       "gemini-3-flash",
@@ -372,7 +414,7 @@
   },
   "lotte-library": {
     "base_url": "https://api.lotte-library.top",
-    "fetched_at": "2026-05-13T04:31:48.492807+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300284+00:00",
     "model_count": 109,
     "models": [
       "Claude Opus 4.6",
@@ -488,7 +530,7 @@
   },
   "mistral": {
     "base_url": "https://api.mistral.ai",
-    "fetched_at": "2026-05-13T04:31:48.492821+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300302+00:00",
     "model_count": 68,
     "models": [
       "mistral-medium-2505",
@@ -563,7 +605,7 @@
   },
   "nvidia": {
     "base_url": "https://integrate.api.nvidia.com",
-    "fetched_at": "2026-05-13T04:31:48.492831+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300320+00:00",
     "model_count": 129,
     "models": [
       "01-ai/yi-large",
@@ -697,9 +739,105 @@
       "zyphra/zamba2-7b-instruct"
     ]
   },
+  "opencode": {
+    "base_url": "https://opencode.ai/zen",
+    "fetched_at": "2026-05-13T08:56:12.300327+00:00",
+    "model_count": 41,
+    "models": [
+      "claude-opus-4-7",
+      "claude-opus-4-6",
+      "claude-opus-4-5",
+      "claude-opus-4-1",
+      "claude-sonnet-4-6",
+      "claude-sonnet-4-5",
+      "claude-sonnet-4",
+      "claude-haiku-4-5",
+      "gemini-3.1-pro",
+      "gemini-3-flash",
+      "gpt-5.5",
+      "gpt-5.5-pro",
+      "gpt-5.4",
+      "gpt-5.4-pro",
+      "gpt-5.4-mini",
+      "gpt-5.4-nano",
+      "gpt-5.3-codex-spark",
+      "gpt-5.3-codex",
+      "gpt-5.2",
+      "gpt-5.2-codex",
+      "gpt-5.1",
+      "gpt-5.1-codex-max",
+      "gpt-5.1-codex",
+      "gpt-5.1-codex-mini",
+      "gpt-5",
+      "gpt-5-codex",
+      "gpt-5-nano",
+      "glm-5.1",
+      "glm-5",
+      "minimax-m2.7",
+      "minimax-m2.5",
+      "kimi-k2.6",
+      "kimi-k2.5",
+      "qwen3.6-plus",
+      "qwen3.5-plus",
+      "big-pickle",
+      "deepseek-v4-flash-free",
+      "minimax-m2.5-free",
+      "ring-2.6-1t-free",
+      "trinity-large-preview-free",
+      "nemotron-3-super-free"
+    ]
+  },
+  "opencode_zen": {
+    "base_url": "https://opencode.ai/zen",
+    "fetched_at": "2026-05-13T08:56:12.300336+00:00",
+    "model_count": 41,
+    "models": [
+      "claude-opus-4-7",
+      "claude-opus-4-6",
+      "claude-opus-4-5",
+      "claude-opus-4-1",
+      "claude-sonnet-4-6",
+      "claude-sonnet-4-5",
+      "claude-sonnet-4",
+      "claude-haiku-4-5",
+      "gemini-3.1-pro",
+      "gemini-3-flash",
+      "gpt-5.5",
+      "gpt-5.5-pro",
+      "gpt-5.4",
+      "gpt-5.4-pro",
+      "gpt-5.4-mini",
+      "gpt-5.4-nano",
+      "gpt-5.3-codex-spark",
+      "gpt-5.3-codex",
+      "gpt-5.2",
+      "gpt-5.2-codex",
+      "gpt-5.1",
+      "gpt-5.1-codex-max",
+      "gpt-5.1-codex",
+      "gpt-5.1-codex-mini",
+      "gpt-5",
+      "gpt-5-codex",
+      "gpt-5-nano",
+      "glm-5.1",
+      "glm-5",
+      "minimax-m2.7",
+      "minimax-m2.5",
+      "kimi-k2.6",
+      "kimi-k2.5",
+      "qwen3.6-plus",
+      "qwen3.5-plus",
+      "big-pickle",
+      "deepseek-v4-flash-free",
+      "minimax-m2.5-free",
+      "ring-2.6-1t-free",
+      "trinity-large-preview-free",
+      "nemotron-3-super-free"
+    ]
+  },
   "openrouter": {
     "base_url": "https://openrouter.ai/api",
-    "fetched_at": "2026-05-13T04:31:48.492934+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300417+00:00",
     "model_count": 363,
     "models": [
       "anthropic/claude-opus-4.7-fast",
@@ -1069,13 +1207,13 @@
   },
   "supacoder": {
     "base_url": "https://supacoder.top",
-    "fetched_at": "2026-05-13T04:31:48.492936+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300420+00:00",
     "model_count": 0,
     "models": []
   },
   "together": {
     "base_url": "https://api.together.xyz",
-    "fetched_at": "2026-05-13T04:31:48.492995+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300476+00:00",
     "model_count": 238,
     "models": [
       "deepseek-ai/DeepSeek-V4-Pro",
@@ -1320,13 +1458,13 @@
   },
   "xinjianya": {
     "base_url": "https://api.xinjianya.top",
-    "fetched_at": "2026-05-13T04:31:48.492997+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300479+00:00",
     "model_count": 0,
     "models": []
   },
   "zanity": {
     "base_url": "https://api.zanity.xyz",
-    "fetched_at": "2026-05-13T04:31:48.493021+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300500+00:00",
     "model_count": 96,
     "models": [
       "gpt-3.5-turbo",
@@ -1427,148 +1565,10 @@
       "gemini-2.5-pro-tts"
     ]
   },
-  "opencode": {
-    "base_url": "https://opencode.ai/zen",
-    "fetched_at": "2026-05-13T04:31:48.493028+00:00",
-    "model_count": 41,
-    "models": [
-      "claude-opus-4-7",
-      "claude-opus-4-6",
-      "claude-opus-4-5",
-      "claude-opus-4-1",
-      "claude-sonnet-4-6",
-      "claude-sonnet-4-5",
-      "claude-sonnet-4",
-      "claude-haiku-4-5",
-      "gemini-3.1-pro",
-      "gemini-3-flash",
-      "gpt-5.5",
-      "gpt-5.5-pro",
-      "gpt-5.4",
-      "gpt-5.4-pro",
-      "gpt-5.4-mini",
-      "gpt-5.4-nano",
-      "gpt-5.3-codex-spark",
-      "gpt-5.3-codex",
-      "gpt-5.2",
-      "gpt-5.2-codex",
-      "gpt-5.1",
-      "gpt-5.1-codex-max",
-      "gpt-5.1-codex",
-      "gpt-5.1-codex-mini",
-      "gpt-5",
-      "gpt-5-codex",
-      "gpt-5-nano",
-      "glm-5.1",
-      "glm-5",
-      "minimax-m2.7",
-      "minimax-m2.5",
-      "kimi-k2.6",
-      "kimi-k2.5",
-      "qwen3.6-plus",
-      "qwen3.5-plus",
-      "big-pickle",
-      "deepseek-v4-flash-free",
-      "minimax-m2.5-free",
-      "ring-2.6-1t-free",
-      "trinity-large-preview-free",
-      "nemotron-3-super-free"
-    ]
-  },
-  "g4f": {
-    "base_url": "https://g4f.space",
-    "fetched_at": "2026-05-13T04:31:48.493030+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "g4f_gemini": {
-    "base_url": "https://g4f.space/api/gemini",
-    "fetched_at": "2026-05-13T04:31:48.493031+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "g4f_groq": {
-    "base_url": "https://g4f.space/api/groq",
-    "fetched_at": "2026-05-13T04:31:48.493033+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "g4f_nvidia": {
-    "base_url": "https://g4f.space/api/nvidia",
-    "fetched_at": "2026-05-13T04:31:48.493035+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "g4f_ollama": {
-    "base_url": "https://g4f.space/api/ollama",
-    "fetched_at": "2026-05-13T04:31:48.493037+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "g4f_pollinations": {
-    "base_url": "https://g4f.space/api/pollinations",
-    "fetched_at": "2026-05-13T04:31:48.493038+00:00",
-    "model_count": 0,
-    "models": []
-  },
   "zenllm": {
     "base_url": "https://zenllm.org",
-    "fetched_at": "2026-05-13T04:31:48.493040+00:00",
+    "fetched_at": "2026-05-13T08:56:12.300503+00:00",
     "model_count": 0,
     "models": []
-  },
-  "antigravity": {
-    "base_url": "https://api.antigravity.dev",
-    "fetched_at": "2026-05-13T04:31:48.493042+00:00",
-    "model_count": 0,
-    "models": []
-  },
-  "opencode_zen": {
-    "base_url": "https://opencode.ai/zen",
-    "fetched_at": "2026-05-13T04:31:48.493049+00:00",
-    "model_count": 41,
-    "models": [
-      "claude-opus-4-7",
-      "claude-opus-4-6",
-      "claude-opus-4-5",
-      "claude-opus-4-1",
-      "claude-sonnet-4-6",
-      "claude-sonnet-4-5",
-      "claude-sonnet-4",
-      "claude-haiku-4-5",
-      "gemini-3.1-pro",
-      "gemini-3-flash",
-      "gpt-5.5",
-      "gpt-5.5-pro",
-      "gpt-5.4",
-      "gpt-5.4-pro",
-      "gpt-5.4-mini",
-      "gpt-5.4-nano",
-      "gpt-5.3-codex-spark",
-      "gpt-5.3-codex",
-      "gpt-5.2",
-      "gpt-5.2-codex",
-      "gpt-5.1",
-      "gpt-5.1-codex-max",
-      "gpt-5.1-codex",
-      "gpt-5.1-codex-mini",
-      "gpt-5",
-      "gpt-5-codex",
-      "gpt-5-nano",
-      "glm-5.1",
-      "glm-5",
-      "minimax-m2.7",
-      "minimax-m2.5",
-      "kimi-k2.6",
-      "kimi-k2.5",
-      "qwen3.6-plus",
-      "qwen3.5-plus",
-      "big-pickle",
-      "deepseek-v4-flash-free",
-      "minimax-m2.5-free",
-      "ring-2.6-1t-free",
-      "trinity-large-preview-free",
-      "nemotron-3-super-free"
-    ]
   }
 }
