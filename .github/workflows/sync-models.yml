@@ -33,8 +33,10 @@ jobs:
         run: pip install aiohttp
 
       - name: Validate PROVIDERS_JSON
+        env:
+          PROVIDERS_JSON_VALIDATE: ${{ secrets.PROVIDERS_JSON }}
         run: |
-          if [ -z "${{ secrets.PROVIDERS_JSON }}" ]; then
+          if [ -z "$PROVIDERS_JSON_VALIDATE" ]; then
             echo "::error::PROVIDERS_JSON secret is not set. Add it in Settings > Secrets."
             exit 1
           fi
@@ -76,14 +78,14 @@ jobs:
           fi
 
       - name: Push to private data repo
-        if: success() && secrets.PRIVATE_DATA_PAT != ''
+        if: success()
         continue-on-error: true
         env:
           PRIVATE_DATA_PAT: ${{ secrets.PRIVATE_DATA_PAT }}
           PRIVATE_DATA_REPO: ${{ secrets.PRIVATE_DATA_REPO }}
         run: |
-          if [ -z "$PRIVATE_DATA_REPO" ]; then
-            echo "PRIVATE_DATA_REPO secret not set, skipping"
+          if [ -z "$PRIVATE_DATA_REPO" ] || [ -z "$PRIVATE_DATA_PAT" ]; then
+            echo "PRIVATE_DATA_REPO or PRIVATE_DATA_PAT not set, skipping"
             exit 0
           fi
           CLONE_URL="https://x-access-token:${PRIVATE_DATA_PAT}@github.com/${PRIVATE_DATA_REPO}.git"
