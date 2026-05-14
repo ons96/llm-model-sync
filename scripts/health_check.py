@@ -60,12 +60,13 @@ def check_local_models_freshness():
 
 
 def check_vps1_gateway():
-    out, rc = ssh_cmd(VPS1, "curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/ 2>/dev/null")
+    out, rc = ssh_cmd(VPS1, "curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/ 2>/dev/null || echo 'FAIL'")
     if rc != 0:
         return "FAIL", f"SSH failed: {out[:80]}"
-    if out == "200":
-        svc, _ = ssh_cmd(VPS1, "sudo systemctl show llm-gateway --property=ActiveState,NRestarts 2>/dev/null")
-        return "OK", f"HTTP 200, {svc}"
+    out = out.strip().replace("'", "")
+    if "200" in out:
+        svc, _ = ssh_cmd(VPS1, "sudo systemctl is-active llm-gateway 2>/dev/null")
+        return "OK", f"HTTP 200, service={svc}"
     return "WARN", f"HTTP {out}"
 
 
