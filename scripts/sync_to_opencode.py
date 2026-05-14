@@ -16,13 +16,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Configuration
-DATA_DIR = Path(os.environ.get("DATA_DIR", "data"))
+# Configuration - resolve paths relative to this script, not CWD
+SCRIPT_DIR = Path(__file__).resolve().parent
+DATA_DIR = Path(os.environ.get("DATA_DIR", SCRIPT_DIR.parent / "data"))
 MODELS_FILE = DATA_DIR / "models.json"
-LLM_PROVIDER_MANAGER_DIR = Path(os.environ.get("LLM_PROVIDER_MANAGER_DIR", 
-    Path(__file__).resolve().parent.parent.parent / "llm-provider-manager"))
+LLM_PROVIDER_MANAGER_DIR = Path(os.environ.get("LLM_PROVIDER_MANAGER_DIR",
+    SCRIPT_DIR.parent.parent / "llm-provider-manager"))
 DB_PATH = LLM_PROVIDER_MANAGER_DIR / "llm_providers.db"
-OPENCODE_CONFIG = Path(os.environ.get("OPENCODE_CONFIG", 
+OPENCODE_CONFIG = Path(os.environ.get("OPENCODE_CONFIG",
     Path.home() / ".config/opencode/opencode.json"))
 
 
@@ -42,47 +43,47 @@ def update_models_from_sync(conn: sqlite3.Connection) -> int:
     if not MODELS_FILE.exists():
         print(f"ERROR: {MODELS_FILE} not found — run sync_models.py first", file=sys.stderr)
         sys.exit(1)
-    
+
     synced_models = json.loads(MODELS_FILE.read_text())
-    
+
     c = conn.cursor()
     updated = 0
-    
+
     for provider_id, data in synced_models.items():
         # Find provider in DB by key_name
         c.execute("SELECT id, display_name FROM providers WHERE key_name = ?", (provider_id,))
         row = c.fetchone()
-        
+
         if not row:
             print(f"  Skipping {provider_id}: not in database (may need import_vps_yaml_to_db)")
             continue
-        
+
         db_provider_id = row["id"]
         synced_model_ids = set(data.get("models", []))
-        
+
         # Get existing models for this provider
         c.execute("SELECT model_id FROM models WHERE provider_id = ?", (db_provider_id,))
         existing_models = {r["model_id"] for r in c.fetchall()}
-        
+
         # Add new models
         new_models = synced_model_ids - existing_models
         for model_id in new_models:
             c.execute("""INSERT OR IGNORE INTO models (provider_id, model_id, display_name, last_verified)
-                         VALUES (?, ?, ?, ?)""", 
-                     (db_provider_id, model_id, model_id, datetime.now(timezone.utc).isoformat()))
-        
+                         VALUES (?, ?, ?, ?)""",
+                      (db_provider_id, model_id, model_id, datetime.now(timezone.utc).isoformat()))
+
         # Mark removed models as fallback_only (soft delete)
         removed_models = existing_models - synced_model_ids
         if removed_models:
-            c.execute(f"""UPDATE models SET fallback_only = 1, updated_at = ? 
+            c.execute(f"""UPDATE models SET fallback_only = 1, updated_at = ?
                           WHERE provider_id = ? AND model_id IN ({','.join(['?' for _ in removed_models])})""",
-                     (datetime.now(timezone.utc).isoformat(), db_provider_id, *removed_models))
+                      (datetime.now(timezone.utc).isoformat(), db_provider_id, *removed_models))
             print(f"  {provider_id}: -{len(removed_models)} models (marked as fallback_only)")
-        
+
         if new_models:
             print(f"  {provider_id}: +{len(new_models)} new models")
             updated += 1
-    
+
     conn.commit()
     return updated
 
@@ -96,23 +97,21 @@ def backup_opencode_json(config_path: Path) -> Path | None:
     try:
         import shutil
         shutil.copy2(config_path, backup_path)
-        print(f"✅ Backup created: {backup_path}")
+        print(f"Backup created: {backup_path}")
         return backup_path
     except Exception as e:
-        print(f"⚠️  Warning: Failed to backup {config_path}: {e}", file=sys.stderr)
+        print(f"Warning: Failed to backup {config_path}: {e}", file=sys.stderr)
         return None
 
 
 def sync_to_opencode(dry_run: bool = False) -> int:
-    """Run the full sync: DB update → opencode.json. Returns updated provider count."""
+    """Run the full sync: DB update -> opencode.json. Returns updated provider count."""
     conn = get_db_connection()
     updated = update_models_from_sync(conn)
     conn.close()
 
-    if updated == 0:
-        print("No provider models updated.")
-        return 0
-
+    # Always sync DB -> opencode.json, even if no new models were inserted,
+    # because fallback_only changes or other DB updates need to propagate.
     # Create backup before syncing (skip for dry-run)
     config_path = OPENCODE_CONFIG
     if not dry_run:
@@ -120,11 +119,11 @@ def sync_to_opencode(dry_run: bool = False) -> int:
         if backup_path:
             print(f"   Restore with: cp {backup_path} {config_path}")
         else:
-            print(f"⚠️  No backup created — opencode.json may not exist yet")
+            print("Warning: No backup created — opencode.json may not exist yet")
 
-    # Now run the existing sync script
+    # Now run the existing sync script with update-only mode (safer: never adds new providers)
     import subprocess
-    cmd = [sys.executable, str(LLM_PROVIDER_MANAGER_DIR / "scripts/sync_db_to_opencode.py")]
+    cmd = [sys.executable, str(LLM_PROVIDER_MANAGER_DIR / "scripts/sync_db_to_opencode.py"), "--update-only"]
     if dry_run:
         cmd.append("--dry-run")
 
@@ -142,7 +141,7 @@ def main():
     parser = argparse.ArgumentParser(description="Sync llm-model-sync data to OpenCode")
     parser.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
     args = parser.parse_args()
-    
+
     updated = sync_to_opencode(args.dry_run)
     print(f"Synced {updated} providers.")
 

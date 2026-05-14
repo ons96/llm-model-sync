@@ -44,6 +44,16 @@ SKIP_PROVIDERS = {
     "g4f_pollinations", "zenllm", "antigravity",
     # DNS dead or requires key but none configured
     "noobrouter", "openai",
+    # DNS dead (domain no longer resolves)
+    "kilocloud", "xinjianya",
+    # Dead endpoints (404, app removed, or 0 models)
+    "claude-carter", "kilo", "wiwi", "supacoder",
+    # Auth broken (key does not grant models access)
+    "ktai",
+    # Duplicate of blazeai (same base URL, fails)
+    "blazeai-glm",
+    # Service down (503 for 3+ days)
+    "swiftrouter",
 }
 
 # Providers that do not require an API key (public or no-auth endpoints)
