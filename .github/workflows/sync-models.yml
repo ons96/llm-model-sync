@@ -10,8 +10,10 @@ on:
         required: false
         default: '15'
 
+# No contents:write needed — we don't push to this public repo
+# Output goes only to the private data repo
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sync:
@@ -21,8 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -37,7 +37,7 @@ jobs:
           PROVIDERS_JSON_VALIDATE: ${{ secrets.PROVIDERS_JSON }}
         run: |
           if [ -z "$PROVIDERS_JSON_VALIDATE" ]; then
-            echo "::error::PROVIDERS_JSON secret is not set. Add it in Settings > Secrets."
+            echo "::error::PROVIDERS_JSON secret is not set"
             exit 1
           fi
 
@@ -48,38 +48,17 @@ jobs:
           DATA_DIR: data
         run: python scripts/sync_models.py
 
-      - name: Check for pricing changes
-        id: changes
-        run: |
-          change_count=$(python3 -c "import json; print(len(json.load(open('data/pricing-changes.json'))))" 2>/dev/null || echo "0")
-          echo "count=$change_count" >> "$GITHUB_OUTPUT"
-          echo "Pricing changes: $change_count"
-
       - name: Verify no secrets in output
         run: |
           for f in data/models.json data/pricing.json data/pricing-changes.json; do
             if grep -qE '(sk-|gsk_|nvapi-|blz_|AIza|lfu_|sta_|vc-|csk-)' "$f" 2>/dev/null; then
-              echo "::error::Secret key pattern found in $f — aborting commit"
+              echo "::error::Secret key pattern found in $f"
               exit 1
             fi
           done
           echo "Output files verified: no secrets leaked"
 
-      - name: Commit updated data files
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f data/models.json data/pricing.json data/pricing-changes.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "sync: update model catalog and pricing data"
-            git push
-          fi
-
       - name: Push to private data repo
-        if: success()
-        continue-on-error: true
         env:
           PRIVATE_DATA_PAT: ${{ secrets.PRIVATE_DATA_PAT }}
           PRIVATE_DATA_REPO: ${{ secrets.PRIVATE_DATA_REPO }}
@@ -112,28 +91,3 @@ jobs:
             git push
           fi
           rm -rf "$TMPDIR"
-
-      - name: Trigger VPS sync
-        if: success()
-        uses: peter-evans/repository-dispatch@v3
-        continue-on-error: true
-        with:
-          token: ${{ secrets.VPS_SYNC_PAT }}
-          repository: ${{ github.repository }}
-          event-type: vps-sync
-          client-payload: '{"run_id": "${{ github.run_id }}"}'
-
-      - name: Alert on free-to-paid changes
-        if: steps.changes.outputs.count != '0'
-        uses: peter-evans/create-or-update-comment@v4
-        continue-on-error: true
-        with:
-          token: ${{ secrets.VPS_SYNC_PAT }}
-          repository: ${{ github.repository }}
-          issue-number: 1
-          body: |
-            :warning: **Free-to-Paid Model Changes Detected**
-
-            ${{ steps.changes.outputs.count }} model(s) that were previously free now have pricing.
-
-            See [run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.

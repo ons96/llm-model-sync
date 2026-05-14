@@ -34,13 +34,25 @@ NEWAPI_SIGS = [
 
 SKIP_PROVIDERS = {
     "google", "aihubmix", "custom", "cursor-proxy", "cliproxyapi",
-    "zenllm", "g4f", "g4f_nvidia", "g4f_groq", "g4f_gemini",
-    "g4f_ollama", "g4f_pollinations", "opencode_zen", "opencode",
     "brave_search", "tavily", "duckduckgo", "exa", "jina",
-    "vps-gateway", "antigravity",
+    "vps-gateway", "iflow",
     "router/best-coding", "router/best-reasoning", "router/best-research",
     "router/best-chat", "router/best-coding-moe",
     "coding-smart", "coding-fast", "chat-smart", "chat-fast",
+    # No tool call support, broken or missing /v1/chat/completions endpoint
+    "g4f", "g4f_nvidia", "g4f_groq", "g4f_gemini", "g4f_ollama",
+    "g4f_pollinations", "zenllm", "antigravity",
+    # DNS dead or requires key but none configured
+    "noobrouter", "openai",
+}
+
+# Providers that do not require an API key (public or no-auth endpoints)
+# Note: opencode/opencode_zen are NOT no-auth; they have keys in .env and
+# are included via the standard key resolution path.
+NO_AUTH_PROVIDERS = {
+    # g4f variants do not support tool calls and lack a working chat endpoint
+    # zenllm and antigravity return 404/405 on /v1/chat/completions
+    # They are excluded from providers.json for OpenCode compatibility.
 }
 
 CUSTOM_MODELS_PATH = {
@@ -160,6 +172,9 @@ def build_providers(opencode_json_path: Path) -> list[dict]:
 
         if resolved_key:
             entry["api_key"] = resolved_key
+            entries.append(entry)
+        elif name in NO_AUTH_PROVIDERS or api_key_ref == "":
+            # No authentication required for this provider
             entries.append(entry)
         else:
             unresolved.append(name)

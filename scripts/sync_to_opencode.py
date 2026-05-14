@@ -87,28 +87,53 @@ def update_models_from_sync(conn: sqlite3.Connection) -> int:
     return updated
 
 
+def backup_opencode_json(config_path: Path) -> Path | None:
+    """Create a timestamped backup of opencode.json. Returns backup path or None on error."""
+    if not config_path.exists():
+        return None
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    backup_path = config_path.parent / f"opencode.json.bak_{timestamp}"
+    try:
+        import shutil
+        shutil.copy2(config_path, backup_path)
+        print(f"✅ Backup created: {backup_path}")
+        return backup_path
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to backup {config_path}: {e}", file=sys.stderr)
+        return None
+
+
 def sync_to_opencode(dry_run: bool = False) -> int:
     """Run the full sync: DB update → opencode.json. Returns updated provider count."""
     conn = get_db_connection()
     updated = update_models_from_sync(conn)
     conn.close()
-    
+
     if updated == 0:
         print("No provider models updated.")
         return 0
-    
+
+    # Create backup before syncing (skip for dry-run)
+    config_path = OPENCODE_CONFIG
+    if not dry_run:
+        backup_path = backup_opencode_json(config_path)
+        if backup_path:
+            print(f"   Restore with: cp {backup_path} {config_path}")
+        else:
+            print(f"⚠️  No backup created — opencode.json may not exist yet")
+
     # Now run the existing sync script
     import subprocess
     cmd = [sys.executable, str(LLM_PROVIDER_MANAGER_DIR / "scripts/sync_db_to_opencode.py")]
     if dry_run:
         cmd.append("--dry-run")
-    
+
     print(f"Running: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     print(result.stdout)
     if result.stderr:
         print(result.stderr, file=sys.stderr)
-    
+
     return updated
 
 
