@@ -68,6 +68,38 @@ def detect_provider_type(base_url: str) -> str:
     return PROVIDER_TYPE_OPENAI
 
 
+def _normalize_model(item: Any) -> dict[str, Any] | None:
+    """Normalize a single model record to dict shape with at least 'id'.
+
+    Handles:
+    - dict (OpenAI / Gemini / most providers)
+    - str (Together format: bare model-id strings like "meta-llama/Llama-3-70b")
+
+    Returns None for unparseable item types (drop them from the catalog).
+    """
+    if isinstance(item, dict):
+        return item
+    if isinstance(item, str) and item:
+        return {"id": item, "object": "model"}
+    return None
+
+
+def _normalize_models(items: Any) -> list[dict[str, Any]]:
+    """Normalize a list of model records, dropping unparseable items.
+
+    Defensive against any list contents: dicts pass through, strings get wrapped
+    as {"id": str, "object": "model"}, other types are dropped.
+    """
+    if not isinstance(items, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for item in items:
+        norm = _normalize_model(item)
+        if norm is not None:
+            out.append(norm)
+    return out
+
+
 async def fetch_models(
     session: aiohttp.ClientSession,
     provider_id: str,
@@ -79,12 +111,16 @@ async def fetch_models(
     - OpenAI-compatible: GET {base_url}/v1/models (Bearer auth)
     - Gemini: GET {base_url}/models?key=... (query param auth)
     - Custom paths via PROVIDER_CUSTOM_MODELS_PATH
-    - Together-style: returns list directly instead of {data: [...]}
+    - Together-style: returns list directly (of dicts OR of bare model-id strings)
 
     Returns:
-      - list of model dicts on success (may be empty for providers with no models)
+      - list of normalized model dicts on success (may be empty for providers
+        that legitimately expose zero models)
       - None on transient failure (HTTP non-200, timeout, network/parse error)
-        Callers must treat None as "do not overwrite prior catalog entry".
+        or unparseable response shape. Callers must treat None as
+        "do not overwrite prior catalog entry" — prevents the data-loss class
+        of bugs where a malformed response silently wipes a known-good
+        catalog back to model_count=0.
     """
     if provider_id in PROVIDER_CUSTOM_MODELS_PATH:
         path = PROVIDER_CUSTOM_MODELS_PATH[provider_id]
@@ -107,19 +143,31 @@ async def fetch_models(
             body = await resp.json(content_type=None)
 
             if isinstance(body, list):
-                return body
+                return _normalize_models(body)
 
             if isinstance(body, dict):
                 if provider_id in GEMINI_PROVIDERS:
                     gemini_models = body.get("models", [])
-                    return [{"id": m["name"].replace("models/", ""), "object": "model", "raw": m} for m in gemini_models if isinstance(m, dict)]
+                    return [
+                        {"id": m["name"].replace("models/", ""), "object": "model", "raw": m}
+                        for m in _normalize_models(gemini_models)
+                    ]
 
-                models = body.get("data", [])
-                if isinstance(models, list):
-                    return models
+                # Standard OpenAI shape is {data: [...]} of dicts. Some
+                # providers use {models, items, results} instead, or wrap
+                # bare model-id strings (Together) rather than full dicts.
+                # Try common alternatives, then normalize whatever we get.
+                for key in ("data", "models", "items", "results"):
+                    raw = body.get(key)
+                    if isinstance(raw, list):
+                        return _normalize_models(raw)
 
-            log.warning("[%s] Unexpected response shape: %s", provider_id, type(body).__name__)
-            return []
+            log.warning(
+                "[%s] Unexpected response shape: %s",
+                provider_id,
+                type(body).__name__ if not isinstance(body, dict) else f"dict(keys={list(body.keys())})",
+            )
+            return None
     except asyncio.TimeoutError:
         log.warning("[%s] models endpoint timed out after %ds", provider_id, timeout)
         return None
