@@ -74,12 +74,17 @@ async def fetch_models(
     base_url: str,
     api_key: str,
     timeout: int,
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Any]] | None:
     """Fetch models from a provider. Handles multiple API formats:
     - OpenAI-compatible: GET {base_url}/v1/models (Bearer auth)
     - Gemini: GET {base_url}/models?key=... (query param auth)
     - Custom paths via PROVIDER_CUSTOM_MODELS_PATH
     - Together-style: returns list directly instead of {data: [...]}
+
+    Returns:
+      - list of model dicts on success (may be empty for providers with no models)
+      - None on transient failure (HTTP non-200, timeout, network/parse error)
+        Callers must treat None as "do not overwrite prior catalog entry".
     """
     if provider_id in PROVIDER_CUSTOM_MODELS_PATH:
         path = PROVIDER_CUSTOM_MODELS_PATH[provider_id]
@@ -98,7 +103,7 @@ async def fetch_models(
         async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=timeout)) as resp:
             if resp.status != 200:
                 log.warning("[%s] models endpoint returned %s", provider_id, resp.status)
-                return []
+                return None
             body = await resp.json(content_type=None)
 
             if isinstance(body, list):
@@ -117,10 +122,10 @@ async def fetch_models(
             return []
     except asyncio.TimeoutError:
         log.warning("[%s] models endpoint timed out after %ds", provider_id, timeout)
-        return []
+        return None
     except Exception as exc:
         log.warning("[%s] models endpoint error: %s", provider_id, exc)
-        return []
+        return None
 
 
 async def fetch_pricing_newapi(
@@ -228,6 +233,11 @@ async def sync_all_providers(
                 log.error("[%s] %s task failed: %s", pid, kind, result)
                 continue
             if kind == "models":
+                if result is None:
+                    # Transient failure (HTTP non-200, timeout, network error).
+                    # Preserve prior catalog entry instead of overwriting with 0.
+                    log.warning("[%s] models fetch failed; preserving prior entry", pid)
+                    continue
                 model_ids = [m.get("id", "unknown") for m in result if isinstance(m, dict)]
                 models_catalog[pid] = {
                     "base_url": base_url,
@@ -310,6 +320,27 @@ def main() -> None:
             log.warning("Could not load previous pricing: %s", exc)
 
     models_catalog, pricing_catalog = asyncio.run(sync_all_providers(providers, timeout))
+
+    # Preserve prior catalog entries for providers whose current fetch failed.
+    # Prevents data loss: a transient 404/timeout/network error must not wipe
+    # a known-good 50-model catalog back to model_count=0.
+    if MODELS_FILE.exists():
+        try:
+            prior_models = json.loads(MODELS_FILE.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            log.warning("Could not load prior models.json for merge: %s", exc)
+            prior_models = {}
+    else:
+        prior_models = {}
+
+    provider_ids = {p["id"] for p in providers}
+    for pid in provider_ids:
+        if pid not in models_catalog and pid in prior_models:
+            log.warning(
+                "[%s] preserving prior entry (model_count=%d) — not successfully fetched this run",
+                pid, prior_models[pid].get("model_count", 0),
+            )
+            models_catalog[pid] = prior_models[pid]
 
     MODELS_FILE.write_text(json.dumps(models_catalog, indent=2))
     log.info("Wrote %s (%d providers)", MODELS_FILE, len(models_catalog))
