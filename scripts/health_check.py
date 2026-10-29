@@ -21,8 +21,8 @@ from pathlib import Path
 
 DATA_DIR = Path(os.environ.get("DATA_DIR", str(Path(__file__).parent.parent / "data")))
 MODELS_JSON = DATA_DIR / "models.json"
-VPS1 = "40.233.101.233"
-VPS2 = "155.248.217.255"
+VPS1 = os.environ.get("VPS1_HOST", "llm-gateway")  # tailnet name
+VPS2 = os.environ.get("VPS2_HOST", "oci-agent-vnic")  # tailnet name
 SSH_KEY = os.path.expanduser("~/.ssh/oracle.key")
 MAX_AGE_HOURS = 30
 
