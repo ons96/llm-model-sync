@@ -6,7 +6,7 @@
 title = "task-board pre-publish default rules"
 
 # Top-level allow-list (gitleaks >=8.18: [[allowlists]] array of tables).
-[[allowlists]]
+[allowlist]
 description = "Operational allow-lists"
 paths = [
   '''\.lock$''',
